@@ -8,10 +8,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-@NoArgsConstructor
 @AllArgsConstructor
+@Service
 public class ExerciseService {
+
     private final ExerciseRepository exerciseRepository;
-    public List<Exercise> getAllExercice
+
+    public List<Exercise> getAllExercice() {
+        return exerciseRepository.findAll();
+    }
 }
