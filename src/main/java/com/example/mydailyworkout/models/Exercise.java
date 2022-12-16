@@ -36,4 +36,5 @@ public class Exercise {
         this.difficulty = difficulty;
         this.instructions = instructions;
     }
+
 }
