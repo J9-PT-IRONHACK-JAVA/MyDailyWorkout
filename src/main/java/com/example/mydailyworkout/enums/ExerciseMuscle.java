@@ -1,0 +1,6 @@
+package com.example.mydailyworkout.enums;
+
+public enum ExerciseMuscle {
+    ABDOMINALS, ABDUCTORS, ADDUCTORS, BICEPS, CALVES, CHEST, FOREARMS, GLUTES, HAMSTRINGS, LATS, LOWERBACK, MIDDLEBACK,
+    NECK, QUADRICEPS, TRAPS, TRICEPS
+}

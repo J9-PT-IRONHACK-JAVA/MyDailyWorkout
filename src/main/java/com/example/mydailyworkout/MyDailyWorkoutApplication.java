@@ -1,16 +1,13 @@
 package com.example.mydailyworkout;
 
-import com.example.mydailyworkout.dto.Exercise;
 import com.example.mydailyworkout.proxy.FitnessClient;
 import com.example.mydailyworkout.repository.ExerciseRepository;
-import com.example.mydailyworkout.service.ExerciseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -21,14 +18,17 @@ public class MyDailyWorkoutApplication implements CommandLineRunner {
 
     private final ExerciseRepository exerciseRepository;
     private final FitnessClient fitnessClient;
-
+    @Autowired
+    private final App app;
     public static void main(String[] args) {
         SpringApplication.run(MyDailyWorkoutApplication.class, args);
     }
 
     @Override
     public void run(String... args) {
-        List<Exercise> response = fitnessClient.getData();
+        app.mainMenu();
+
+        /*List<Exercise> response = fitnessClient.getData();
 
         System.out.println(response.get(1).getName());
 
@@ -37,7 +37,7 @@ public class MyDailyWorkoutApplication implements CommandLineRunner {
                     exercise.getEquipment(), exercise.getDifficulty(), exercise.getInstructions());
 
             exerciseRepository.save(newExercise);
-        }
+        }*/
     }
 
 }

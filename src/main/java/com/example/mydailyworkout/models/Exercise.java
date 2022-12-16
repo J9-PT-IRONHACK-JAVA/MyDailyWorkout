@@ -1,4 +1,4 @@
-package com.example.mydailyworkout.dto;
+package com.example.mydailyworkout.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
