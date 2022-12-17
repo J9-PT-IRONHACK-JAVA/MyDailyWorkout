@@ -26,7 +26,7 @@ public class App {
 
         do {
             System.out.println(ConsoleColors.BLUE_BOLD_BRIGHT + " 1 -> Create custom workout\n 2 -> Find Exercise\n 3" +
-                               " -> Show my saved workouts \n 4 -> Exit" + ConsoleColors.RESET );
+                               " -> Show my exercices \n 4 -> Exit" + ConsoleColors.RESET );
             input = sc.nextLine();
             if(input.equals("4")){
                 System.out.println("Yo esco chao chao...");

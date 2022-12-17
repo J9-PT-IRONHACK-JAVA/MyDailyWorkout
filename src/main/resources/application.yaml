@@ -8,7 +8,7 @@ spring:
     show-sql: false #show commands on terminal that are being executed
     #generate-ddl: true # => como el update de abajo
     hibernate:
-      ddl-auto: update # update => para simplemente trabajar sin hacer un drop de la tabla
+      ddl-auto: create # update => para simplemente trabajar sin hacer un drop de la tabla
 server:
   port: 9090
 

@@ -1,16 +1,23 @@
 package com.example.mydailyworkout.service;
 
+import com.example.mydailyworkout.dto.WorkoutExerciseDto;
 import com.example.mydailyworkout.models.Exercise;
+import com.example.mydailyworkout.models.Workout;
 import com.example.mydailyworkout.proxy.FitnessClient;
 import com.example.mydailyworkout.repository.ExerciseRepository;
+import com.example.mydailyworkout.repository.WorkoutRepository;
 import com.example.mydailyworkout.utils.ConsoleColors;
+import com.example.mydailyworkout.utils.TableGenerator;
+import jakarta.persistence.Tuple;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.aspectj.weaver.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.stereotype.Service;
 
 import java.io.Console;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -22,6 +29,7 @@ import java.util.Scanner;
 
 public class InputService {
 
+    @Autowired
     private WorkoutService workoutService;
 
     @Autowired
@@ -29,9 +37,14 @@ public class InputService {
 
     @Autowired
     private ExerciseRepository exerciseRepository;
+    @Autowired
+    private WorkoutRepository workoutRepository;
+
 
     @Autowired
     private FitnessClient fitnessClient;
+    @Autowired
+    private TableGenerator tableGenerator;
 
     public void main(Scanner sc, String input) {
 
@@ -39,9 +52,11 @@ public class InputService {
             case "1":
                 askForCustomEx(sc);
                 break;
-
+            case "2":
+                askForFindExercise(sc);
+                break;
             case "3":
-                showExercices();
+                exerciseService.showExercices();
                 break;
         }
     }
@@ -51,94 +66,96 @@ public class InputService {
         String difficulty = null;
         String workoutType = null;
         String muscle = null;
+        String strengthType = null;
+
+        var selectedDifficulty = switchToDifficulty(sc, difficulty);
+        var selectedWorkoutType = switchTodType(sc, workoutType);
+        var returnStrengthType = returnStrengthType(sc);
+        var selectedMuscle = switchToMuscleType(sc, muscle);
+
+
+        List<Exercise> exercisesResponse = fitnessClient.getExercicesByParams(selectedWorkoutType, selectedMuscle);
+        List<Exercise> ex2 = workoutService.selectRandomExercises(exercisesResponse, selectedDifficulty);
+        Workout workout = workoutService.createRandomWorkout(exercisesResponse, selectedDifficulty, returnStrengthType);
+        workoutRepository.save(workout);
+        List<Tuple> test = workoutRepository.showCustomWorkout();
+
+        List<WorkoutExerciseDto> responseList = convertToWorkoutDto(test);
+
+        tableGenerator.showTableWorkout( responseList );
+
+    }
+    public List<WorkoutExerciseDto> convertToWorkoutDto(List<Tuple> workoutList){
+
+        List<WorkoutExerciseDto> workoutListToReturn = new ArrayList<>();
+
+        for( int i = 0; i < workoutList.size(); i++){
+
+            var workout = workoutList.get(i);
+            var name = (String)workout.get(0);
+            var muscle = (String)workout.get(1);
+            var equipment = (String)workout.get(2);
+            var sets = (String)workout.get(3);
+            var reps = (String)workout.get(4);
+
+            WorkoutExerciseDto workoutExerciseDto = new WorkoutExerciseDto(name, muscle, equipment, sets, reps);
+            workoutListToReturn.add(workoutExerciseDto);
+
+        }
+
+        return workoutListToReturn;
+    }
+    public void askForFindExercise(Scanner sc) {
+
+        String difficulty = null;
+        String workoutType = null;
+        String muscle = null;
 
         var selectedDifficulty = switchToDifficulty(sc, difficulty);
         var selectedWorkoutType = switchTodType(sc, workoutType);
         var selectedMuscle = switchToMuscleType(sc, muscle);
 
+
         List<Exercise> exercisesResponse = fitnessClient.getExercicesByParams(selectedWorkoutType, selectedMuscle);
+        Exercise exercise = exercisesResponse.get(0);
 
 
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(String.format("%-40s %-20s %-20s %-20s %-20s %-100s", ConsoleColors.BLUE_UNDERLINED + "Name", "Type",
-                "Muscle",
-                "Equipment",
-                "Difficulty", "Instructions")).append("\n");
-
-        for (Exercise exercise : exercisesResponse) {
-            sb.append(String.format("%-40s %-20s %-20s %-20s %-20s %-100s",ConsoleColors.BLUE + exercise.getName(),
-                    exercise.getType(),
-                    exercise.getMuscle(),
-                    exercise.getEquipment(), exercise.getDifficulty(), exercise.getInstructions().substring(0, 100))).append("\n");
-        }
-
-        System.out.println("");
-        System.out.println("");
-        System.out.println(sb);
-        System.out.println("");
-        System.out.println("");
-
-
-        saveToDataBase(sc, exercisesResponse);
-
+        tableGenerator.showTableSingleExercice( exercise );
+        exerciseService.saveOneToDataBase(sc, exercise);
 
     }
-
-    public void showExercices(){
-        List<Exercise> exercises = exerciseService.getAllExercice();
-
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(String.format("%-40s %-20s %-20s %-20s %-20s %-100s", ConsoleColors.BLUE_UNDERLINED + "Name", "Type",
-                "Muscle",
-                "Equipment",
-                "Difficulty", "Instructions")).append("\n");
-
-        for (Exercise exercise : exercises) {
-            sb.append(String.format("%-40s %-20s %-20s %-20s %-20s %-100s", ConsoleColors.BLUE + exercise.getName(),
-                    exercise.getType(),
-                    exercise.getMuscle(),
-                    exercise.getEquipment(), exercise.getDifficulty(), exercise.getInstructions().substring(0, 100))).append("\n");
-        }
-
-        System.out.println(sb);
-    }
-
-    public void saveToDataBase(Scanner sc, List<Exercise> exResponse) {
-
-        String saveResponse = "";
-
-        System.out.println("");
-        System.out.println("");
+    public void askStrengthType(){
         System.out.println(ConsoleColors.BLUE_BOLD_BRIGHT + """
-                Want to save these exercise on your profile?
-                1.Yes
-                2.No
-                """ + ConsoleColors.RESET);
+                Enter type of strength
+                1.Resistance
+                2.Hipertrofy
+                3.Max strength
+                """);
+    }
 
-        saveResponse = sc.nextLine();
+    public String returnStrengthType(Scanner sc){
 
-        if (saveResponse.equals("1")) {
-
-            for (Exercise exercise : exResponse) {
-                var newExercise = new Exercise(exercise.getName(), exercise.getType(), exercise.getMuscle(),
-                        exercise.getEquipment(), exercise.getDifficulty(), exercise.getInstructions());
-
-                exerciseRepository.save(newExercise);
-            }
-
-            System.out.println("");
-            System.out.println("");
-            System.out.println(ConsoleColors.GREEN_BOLD_BRIGHT + "Workout and exercises saved successfully on your " +
-                               "profile" + ConsoleColors.RESET);
-            System.out.println("");
-            System.out.println("");
-            System.out.println("");
-            System.out.println("");
+        String strengthTypeResponse;
+        askStrengthType();
+        strengthTypeResponse = sc.nextLine();
+        switch ( strengthTypeResponse ){
+            case "1":
+                strengthTypeResponse = "Resistance";
+                break;
+            case "2":
+                strengthTypeResponse = "Hipertrofy";
+                break;
+            case "3":
+                strengthTypeResponse = "Max strength";
+                break;
+            default:
+                System.out.println("invavildComand");
         }
 
+        return strengthTypeResponse;
+
     }
+
 
     public String switchToDifficulty(Scanner sc, String difficulty) {
 
