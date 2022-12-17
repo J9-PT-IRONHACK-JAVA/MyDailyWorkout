@@ -17,6 +17,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.stereotype.Service;
 
 import java.io.Console;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -79,14 +80,31 @@ public class InputService {
         workoutRepository.save(workout);
         List<Tuple> test = workoutRepository.showCustomWorkout();
 
-        System.out.println(test);
-        convertToWorkoutDto(test);
+        List<WorkoutExerciseDto> responseList = convertToWorkoutDto(test);
 
-        tableGenerator.showTableExercice( ex2 );
-        exerciseService.saveToDataBase(sc, ex2);
+        tableGenerator.showTableWorkout( responseList );
 
     }
+    public List<WorkoutExerciseDto> convertToWorkoutDto(List<Tuple> workoutList){
 
+        List<WorkoutExerciseDto> workoutListToReturn = new ArrayList<>();
+
+        for( int i = 0; i < workoutList.size(); i++){
+
+            var workout = workoutList.get(i);
+            var name = (String)workout.get(0);
+            var muscle = (String)workout.get(1);
+            var equipment = (String)workout.get(2);
+            var sets = (String)workout.get(3);
+            var reps = (String)workout.get(4);
+
+            WorkoutExerciseDto workoutExerciseDto = new WorkoutExerciseDto(name, muscle, equipment, sets, reps);
+            workoutListToReturn.add(workoutExerciseDto);
+
+        }
+
+        return workoutListToReturn;
+    }
     public void askForFindExercise(Scanner sc) {
 
         String difficulty = null;
@@ -104,22 +122,6 @@ public class InputService {
 
         tableGenerator.showTableSingleExercice( exercise );
         exerciseService.saveOneToDataBase(sc, exercise);
-
-    }
-    public void convertToWorkoutDto(List<Tuple> workoutList){
-
-        for( int i = 0; i < workoutList.size(); i++){
-
-            var workout = workoutList.get(i);
-
-            for( var j = 0; j < workout. )
-
-        }
-
-
-        //WorkoutExerciseDto ne = (WorkoutExerciseDto) u.get(0);
-        var a = u.get(0);
-        System.out.println(a.toString());
 
     }
     public void askStrengthType(){
