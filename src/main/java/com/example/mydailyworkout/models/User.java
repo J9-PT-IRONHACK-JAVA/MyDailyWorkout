@@ -20,6 +20,6 @@ public class User {
     private Long id;
     private String name;
     private String password;
-    @OneToMany(mappedBy = "user")
-    private List<Workout> workouts  = new ArrayList<>();
+    /*@OneToMany(mappedBy = "user")
+    private List<Workout> workouts  = new ArrayList<>();*/
 }

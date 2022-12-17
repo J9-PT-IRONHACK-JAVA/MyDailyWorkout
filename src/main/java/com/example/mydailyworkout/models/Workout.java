@@ -10,30 +10,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table ( name = "workouts")
 public class Workout {
 
     @Id
+    @GeneratedValue( strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    /*
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User user;*/
 
-    //@OneToMany(mappedBy = "workout")
-    //private List<Exercise> exercises = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+            name = "workout_exercises",
+            joinColumns = @JoinColumn(name = "workout_id"),
+            inverseJoinColumns = @JoinColumn(name = "exercise_id"))
+    private List<Exercise> exercises = new ArrayList<>();
 
     private String sets;
     private String reps;
 
-    /*
-    public Workout(User user, List<Exercise> exercises, String sets, String reps) {
-        this.user = user;
+
+    public Workout(List<Exercise> exercises, String sets, String reps) {
         this.exercises = exercises;
         this.sets = sets;
         this.reps = reps;
-    }*/
+    }
 }
