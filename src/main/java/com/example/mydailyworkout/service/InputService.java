@@ -51,7 +51,9 @@ public class InputService {
             case "1":
                 askForCustomEx(sc);
                 break;
-
+            case "2":
+                askForFindExercise(sc);
+                break;
             case "3":
                 exerciseService.showExercices();
                 break;
@@ -72,17 +74,54 @@ public class InputService {
 
 
         List<Exercise> exercisesResponse = fitnessClient.getExercicesByParams(selectedWorkoutType, selectedMuscle);
-
+        List<Exercise> ex2 = workoutService.selectRandomExercises(exercisesResponse, selectedDifficulty);
         Workout workout = workoutService.createRandomWorkout(exercisesResponse, selectedDifficulty, returnStrengthType);
         workoutRepository.save(workout);
         List<Tuple> test = workoutRepository.showCustomWorkout();
 
         System.out.println(test);
-        //tableGenerator.showTableExercice(filteredExercises);
-        //exerciseService.saveToDataBase(sc, exercisesResponse);
+        convertToWorkoutDto(test);
+
+        tableGenerator.showTableExercice( ex2 );
+        exerciseService.saveToDataBase(sc, ex2);
 
     }
 
+    public void askForFindExercise(Scanner sc) {
+
+        String difficulty = null;
+        String workoutType = null;
+        String muscle = null;
+
+        var selectedDifficulty = switchToDifficulty(sc, difficulty);
+        var selectedWorkoutType = switchTodType(sc, workoutType);
+        var selectedMuscle = switchToMuscleType(sc, muscle);
+
+
+        List<Exercise> exercisesResponse = fitnessClient.getExercicesByParams(selectedWorkoutType, selectedMuscle);
+        Exercise exercise = exercisesResponse.get(0);
+
+
+        tableGenerator.showTableSingleExercice( exercise );
+        exerciseService.saveOneToDataBase(sc, exercise);
+
+    }
+    public void convertToWorkoutDto(List<Tuple> workoutList){
+
+        for( int i = 0; i < workoutList.size(); i++){
+
+            var workout = workoutList.get(i);
+
+            for( var j = 0; j < workout. )
+
+        }
+
+
+        //WorkoutExerciseDto ne = (WorkoutExerciseDto) u.get(0);
+        var a = u.get(0);
+        System.out.println(a.toString());
+
+    }
     public void askStrengthType(){
         System.out.println(ConsoleColors.BLUE_BOLD_BRIGHT + """
                 Enter type of strength

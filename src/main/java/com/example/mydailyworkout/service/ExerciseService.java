@@ -71,6 +71,40 @@ public class ExerciseService {
             System.out.println("");
             System.out.println("");
         }
+    }
+
+    public void saveOneToDataBase(Scanner sc, Exercise exercise) {
+
+        String saveResponse = "";
+
+        System.out.println("");
+        System.out.println("");
+        System.out.println(ConsoleColors.BLUE_BOLD_BRIGHT + """
+                Want to save these exercise on your profile?
+                1.Yes
+                2.No
+                """ + ConsoleColors.RESET);
+
+        saveResponse = sc.nextLine();
+
+        if (saveResponse.equals("1")) {
+
+
+                var newExercise = new Exercise(exercise.getName(), exercise.getType(), exercise.getMuscle(),
+                        exercise.getEquipment(), exercise.getDifficulty(), exercise.getInstructions());
+
+                exerciseRepository.save(newExercise);
+
+
+            System.out.println("");
+            System.out.println("");
+            System.out.println(ConsoleColors.GREEN_BOLD_BRIGHT + "Workout and exercises saved successfully on your " +
+                    "profile" + ConsoleColors.RESET);
+            System.out.println("");
+            System.out.println("");
+            System.out.println("");
+            System.out.println("");
+        }
 
     }
 }
